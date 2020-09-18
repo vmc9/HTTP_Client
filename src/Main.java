@@ -13,6 +13,10 @@ public class Main {
             URL url = new URL("http://httpbin.org/get?course=networking&assignment=1");
             client.GET(url, headers, "-v");
 
+            headers.put("Content-type", "application/json");
+            url = new URL("http://httpbin.org/post");
+            client.POST(url, headers, "{\"Assignment\" : 1}", "-d", "-v");
+
         } catch (IOException exception){
 
             System.out.println(exception.toString());

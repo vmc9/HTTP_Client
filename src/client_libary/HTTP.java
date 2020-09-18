@@ -1,7 +1,5 @@
 package client_libary;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -9,7 +7,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.net.Socket;
 import java.io.*;
-
 
 /*
     HTTP is a class that provides a client interface for making POST and GET requests
@@ -33,9 +30,55 @@ public class HTTP {
     Calendar request_time = Calendar.getInstance();
     String crlf = "\r\n";
 
-    public String POST(URL url, HashMap<String, String> headers, String payload, String mode, String flag){
-        // POST method
-        return "response";
+    public String POST(URL url, HashMap<String, String> headers, String payload, String mode, String flag) throws IOException {
+        String host = url.getHost();
+        String path = url.getPath();
+
+        Socket connection = new Socket(host, 80);
+
+        PrintWriter http_message = new PrintWriter(connection.getOutputStream(), true);
+        StringBuilder message_builder = new StringBuilder();
+
+        headers.put("Date", DateTimeFormatter.RFC_1123_DATE_TIME
+                .withZone(ZoneOffset.UTC)
+                .format(Instant.now()));
+
+        String request_line = "POST " + path + " " + version + crlf;
+        message_builder.append(request_line);
+        if(mode.equals("-d")){
+            headers.put("Content-length", Integer.toString(payload.length()));
+            headers.forEach((name, value) -> message_builder.append(name).append(": ").append(value).append(crlf));
+            message_builder.append(crlf).append(payload).append(crlf);
+        } else if(mode.equals("-f")){
+            //Handle file
+        } else {
+        System.out.println("ERROR: Either -d flag or -f flag must be used, but not both");
+        }
+
+        if(flag.equals("-v")){
+            System.out.println(message_builder.toString());
+        }
+
+        http_message.println(message_builder.toString());
+
+        BufferedReader http_response = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        StringBuilder response_builder = new StringBuilder();
+
+        int next = http_response.read();
+        while(next != -1){
+            response_builder.append((char)next);
+            next = http_response.read();
+        }
+
+        http_message.close();
+        http_response.close();
+        connection.close();
+
+        if(flag.equals("-v")){
+            System.out.println(response_builder.toString());
+        }
+
+        return response_builder.toString();
     }
 
     public String GET(URL url, HashMap<String, String> headers, String flag) throws IOException {
@@ -48,13 +91,9 @@ public class HTTP {
         PrintWriter http_message = new PrintWriter(connection.getOutputStream(), true);
         StringBuilder message_builder = new StringBuilder();
 
-        headers.put("Date", DateTimeFormatter.RFC_1123_DATE_TIME
-                .withZone(ZoneOffset.UTC)
-                .format(Instant.now()));
-
         String request_line = "GET " + path + " " + version + crlf;
         message_builder.append(request_line);
-        headers.forEach((name, value) -> message_builder.append(name).append(" : ").append(value).append(crlf));
+        headers.forEach((name, value) -> message_builder.append(name).append(": ").append(value).append(crlf));
 
         if(flag.equals("-v")){
             System.out.println(message_builder.toString());
