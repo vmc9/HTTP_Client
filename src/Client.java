@@ -1,4 +1,3 @@
-package client_libary;
 import java.net.URL;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -7,15 +6,16 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.net.Socket;
 import java.io.*;
+import java.util.Scanner;
 
 /*
     HTTP is a class that provides a client interface for making POST and GET requests
     from a server using the Hypertext Transfer Protocol version 1.0 as described in RFC1945
  */
 
-public class HTTP {
+public class Client {
 
-    public HTTP(){
+    public Client(){
         System.out.println("HTTP Client Created\n");
         this.version = "HTTP/1.0";
         String greeting =   "   \\\\    Most\n" +
@@ -45,12 +45,35 @@ public class HTTP {
 
         String request_line = "POST " + path + " " + version + crlf;
         message_builder.append(request_line);
+
         if(mode.equals("-d")){
+
             headers.put("Content-length", Integer.toString(payload.length()));
-            headers.forEach((name, value) -> message_builder.append(name).append(": ").append(value).append(crlf));
-            message_builder.append(crlf).append(payload).append(crlf);
+            headers.forEach((name, value) -> message_builder.append(name).append(": ")
+                    .append(value)
+                    .append(crlf));
+            message_builder.append(crlf)
+                    .append(payload)
+                    .append(crlf);
+
         } else if(mode.equals("-f")){
+
             //Handle file
+            File payload_file = new File(payload);
+            Scanner file_scan = new Scanner(payload_file);
+            StringBuilder data_string = new StringBuilder();
+            while(file_scan.hasNextLine()){
+                data_string.append(file_scan.nextLine());
+            }
+
+            headers.put("Content-length", Integer.toString(data_string.toString().length()));
+            headers.forEach((name, value) -> message_builder.append(name).append(": ")
+                    .append(value)
+                    .append(crlf));
+            message_builder.append(crlf)
+                    .append(data_string.toString())
+                    .append(crlf);
+
         } else {
         System.out.println("ERROR: Either -d flag or -f flag must be used, but not both");
         }
