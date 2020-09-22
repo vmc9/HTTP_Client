@@ -2,7 +2,6 @@ import java.net.URL;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.net.Socket;
 import java.io.*;
@@ -27,7 +26,6 @@ public class Client {
     }
 
     String version;
-    Calendar request_time = Calendar.getInstance();
     String crlf = "\r\n";
 
     public String POST(URL url, HashMap<String, String> headers, String payload, String mode, String flag) throws IOException {
@@ -97,9 +95,10 @@ public class Client {
         http_response.close();
         connection.close();
 
-        String[] response = response_builder.toString().split("\n");
+        String[] response = response_builder.toString().split(crlf+crlf
+        );
         if(flag.equals("-v")){
-            System.out.println(response[0]);
+            System.out.println(response[0]+"\n");
         }
         System.out.println(response[1]);
 

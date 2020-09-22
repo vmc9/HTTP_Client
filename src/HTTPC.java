@@ -40,20 +40,15 @@ public class HTTPC {
                 boolean nextIsData = false;
 
                 HashMap<String, String> headers = new HashMap<>();
-
+                int i = 0;
                 for(String block : args){
-                    //Options
-                    nextIsHeader = block.equals("-h");
-                    nextIsData = block.equals("-d");
-                    nextIsFile = block.equals("-f");
-
                     if(nextIsHeader){
                         String[] header = block.split(":");
                         headers.put(header[0], header[1]);
                     }
 
                     if(nextIsData){
-                        data = block;
+                        data = block.replace("\'", "\"")+" "+args[i+1];
                     } else if(nextIsFile){
                         file = block;
                     }
@@ -66,6 +61,13 @@ public class HTTPC {
                     if(block.contains("http")){
                         url = new URL((block));
                     }
+
+                    //Options
+                    nextIsHeader = block.equals("-h");
+                    nextIsData = block.equals("-d");
+                    nextIsFile = block.equals("-f");
+
+                    i++;
                 }
 
                 if(url!= null){
