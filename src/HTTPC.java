@@ -47,7 +47,7 @@ public class HTTPC {
                                 "and headers.\n" +
                                 "-h key:value Associates headers to HTTP Request with the format\n" +
                                 "'key:value'.\n" +
-                                "-d string Associates an inline data to the body HTTP POST request.\n" +
+                                "-d string Associates an inline data to the body HTTP POST request in the form {'key': value}.\n" +
                                 "-f file Associates the content of a file to the body HTTP POST\n" +
                                 "request.\n" +
                                 "Either [-d] or [-f] can be used but not both.");
