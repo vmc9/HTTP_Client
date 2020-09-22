@@ -4,11 +4,10 @@ import java.util.HashMap;
 
 public class HTTPC {
     public static void main(String[] args){
-        String mode = "TEST";
         try {
             Client client = new Client();
-            if(mode.equals("TEST") || args[0].equals("TEST")){
 
+            if(args.length > 0 && args[0].equals("TEST")){
                 HashMap<String, String> headers = new HashMap<>();
                 headers.put("From", "student@demo.com");
                 URL url;
@@ -28,34 +27,72 @@ public class HTTPC {
                 System.out.println("POST INLINE TEST\n");
                 client.POST(url, headers, "{\"Assignment\" : 1}", "-d", "-v");
 
-            }else{
+            }else if(args.length > 0){
+                //Variables
+                String command_method = args[0];
+                URL url = null;
+                String data = "";
+                String file = "";
+                String verbose = "";
+
+                boolean nextIsHeader = false;
+                boolean nextIsFile = false;
+                boolean nextIsData = false;
+
+                HashMap<String, String> headers = new HashMap<>();
+
                 for(String block : args){
-                    System.out.println(block);
+                    //Options
+                    nextIsHeader = block.equals("-h");
+                    nextIsData = block.equals("-d");
+                    nextIsFile = block.equals("-f");
+
+                    if(nextIsHeader){
+                        String[] header = block.split(":");
+                        headers.put(header[0], header[1]);
+                    }
+
+                    if(nextIsData){
+                        data = block;
+                    } else if(nextIsFile){
+                        file = block;
+                    }
+
+                    if(block.equals("-v")){
+                        verbose = "-v";
+                    }
+
+                    //URL
+                    if(block.contains("http")){
+                        url = new URL((block));
+                    }
                 }
-                String command_method;
-                boolean verbose;
-                HashMap<String, String> headers = getHeaders(args);
-                String payload_type;
 
+                if(url!= null){
+                    if(command_method.equals("POST") || command_method.equals("post")){
+                        if(!data.equals("")){
+                            client.POST(url, headers, data, "-d",verbose);
+                        } else if(!file.equals("")){
+                            client.POST(url, headers, file, "-f",verbose);
+                        } else{
+                            System.out.println("COMMAND ERROR: -d or -f is required");
+                        }
+                    } else if(command_method.equals("GET") || command_method.equals("get")){
+                        client.GET(url, headers, verbose);
+                    } else if(command_method.equals("HELP") || command_method.equals("help")) {
+
+                    }else {
+                        System.out.println("COMMAND ERROR: POST or GET required");
+                    }
+                } else{
+                    System.out.println("COMMAND ERROR: URL is required");
+                }
+            } else{
+                System.out.println("java HTTPC help for usage");
             }
-
         } catch (IOException exception){
             System.out.println(exception.toString());
-
         }
-    }
-
-    public static HashMap<String, String> getHeaders(String[] input){
-        HashMap<String, String> headers = new HashMap<>();
-        int index = 1;
-        while(index < input.length){
-            if(input[index-1].contains("-h") && input[index].contains(":")){
-                String[] header = input[index].split(":");
-                headers.put(header[0], header[1]);
-            }
-            index++;
-        }
-        return headers;
     }
 }
 

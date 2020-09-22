@@ -97,9 +97,11 @@ public class Client {
         http_response.close();
         connection.close();
 
+        String[] response = response_builder.toString().split("\n");
         if(flag.equals("-v")){
-            System.out.println(response_builder.toString());
+            System.out.println(response[0]);
         }
+        System.out.println(response[1]);
 
         return response_builder.toString();
     }
@@ -137,9 +139,12 @@ public class Client {
         http_response.close();
         connection.close();
 
+        String[] response = response_builder.toString().split(crlf+crlf
+        );
         if(flag.equals("-v")){
-            System.out.println(response_builder.toString());
+            System.out.println(response[0]+"\n");
         }
+        System.out.println(response[1]);
 
         return response_builder.toString();
     }
