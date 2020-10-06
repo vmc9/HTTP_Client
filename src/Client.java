@@ -77,6 +77,7 @@ public class Client {
         }
 
         if(flag.equals("-v")){
+            System.out.println("VERBOSE OUTPUT");
             System.out.println(message_builder.toString());
         }
 
@@ -98,8 +99,10 @@ public class Client {
         String[] response = response_builder.toString().split(crlf+crlf
         );
         if(flag.equals("-v")){
+            System.out.println("VERBOSE OUTPUT");
             System.out.println(response[0]+"\n");
         }
+        System.out.println("REGULAR OUTPUT");
         System.out.println(response[1]);
 
         return response_builder.toString();
@@ -120,6 +123,7 @@ public class Client {
         headers.forEach((name, value) -> message_builder.append(name).append(": ").append(value).append(crlf));
 
         if(flag.equals("-v")){
+            System.out.println("VERBOSE OUTPUT");
             System.out.println(message_builder.toString());
         }
 
@@ -138,11 +142,12 @@ public class Client {
         http_response.close();
         connection.close();
 
-        String[] response = response_builder.toString().split(crlf+crlf
-        );
+        String[] response = response_builder.toString().split(crlf+crlf);
         if(flag.equals("-v")){
+            System.out.println("VERBOSE OUTPUT");
             System.out.println(response[0]+"\n");
         }
+        System.out.println("REGULAR OUTPUT");
         System.out.println(response[1]);
 
         return response_builder.toString();
